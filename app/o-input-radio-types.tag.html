@@ -1,0 +1,21 @@
+<o-input-radio-types>
+  <label if={ opts.field.label }
+    for={ opts.field.name + ''}
+    class="[ o-input-group__label ]" >
+
+    <input if={ field.type == 'checkbox' } type="checkbox"
+      name={ field.name }
+      onchange={ checkbox_change }
+      checked={ !!field.value }
+      value={ !!field.value }> { field.label }
+
+  </label>
+  <script>
+  var tag = this;
+
+  checkbox_change(e) {
+    tag.opts.field.value = !!e.target.checked;
+    tag.update();
+  }
+  </script>
+</o-input-radio-types>

@@ -1,0 +1,94 @@
+<!--
+  Common @params
+  name        STRING without spaces
+  placeholder STRING
+  lable       STRING
+  required    BOOLEAN || false
+  change      FUNC || false : event listner for onchange
+-->
+<!--
+<input type="text/textarea">
+@params
+  type        text/textarea/number/email/password
+  maxlength   NUMBER
+-->
+<o-input-group class="[ o-input-group ]">
+  <label if={ opts.field.label && ( field_input_type(opts.field.type) != 'radio_types' ) }
+    for={ opts.field.name }
+    class="[ o-input-group__label ]" >
+    <!-- THE LABEL -->
+    { opts.field.label } <span class="[ o-input-group__label__required ]" if={ opts.field.required }>*<span>:
+  </label>
+
+  <!-- TEXT TYPES -->
+  <input if={ field_input_type(opts.field.type) == 'text' }
+    name={ opts.field.name }
+    type={ opts.field.type }
+    placeholder={ opts.field.placeholder }
+    required={ opts.field.required }
+    maxlength={ opts.field.maxlength }
+    max={ opts.field.max }
+    step={ opts.field.step }
+    value={ opts.field.value }
+    onchange={ opts.field.change }
+    class="[ o-input-group__field ][ o-field o-field--text ][ c-field ]">
+  </input>
+
+  <!-- SELECT -->
+  <select if={ field_input_type(opts.field.type) == 'select' }
+    name={ opts.field.name }
+    required={ opts.field.required }
+    onchange={ opts.field.change }
+    class="[ o-input-group__field ][ c-field o-field o-field--select ]">
+
+    <option each={ option in opts.field.options }
+      selected={ !!option[2] ? 'selected' : false }
+      value={ option[1] }> { option[0] }
+    </option>
+
+  </select>
+
+  <!-- COLLECTION -->
+  <o-input-collection if={ field_input_type(opts.field.type) == 'collection' } field={ opts.field }>
+  </o-input-collection>
+
+
+  <!-- RADIO TYPES -->
+  <span if={ field_input_type(opts.field.type) == 'radio_types'}>
+    <o-input-radio-types field={ opts.field }/>
+  </span>
+
+  <script>
+    var tag = this;
+
+    /*
+
+      Lifecycle
+
+    */
+    tag.on('mount', () => { console.log(tag.opts); });
+    tag.on('unmount', () => { tag.off('*') });
+
+    /*
+
+      Library
+
+    */
+
+    // Check if field belongs to a certain type.
+    get_field_input_type = function(input_types, field_type) {
+      return _.findKey(input_types, (o) => { return _.includes(o, field_type )});
+    }
+
+    field_input_type(field_type) {
+      let types = {
+        text: ['text', 'textarea', 'password', 'email', 'number'],
+        select: ['options', 'select'],
+        collection: ['collection'],
+        radio_types: ['checkbox', 'radio', 'switch']
+      };
+      return get_field_input_type(types, field_type);
+    }
+
+  </script>
+</o-input-group>

@@ -1,0 +1,78 @@
+<!-- Component::Form
+
+  Opts:
+  js_id*: turns to html id="" attribute [STRING]
+  method: [POST, GET]
+  action: URL for action [URL::STRING]
+  form*: An array of of input-groups/fields [ ARRAY ]
+  submit: Hanlde form submission [FUNCTIOn]
+  submit_text: Submit button text.
+
+  Useage:
+  `<o-form>`
+
+  opts.form is an ARRAY of FORM DEFINITIONS:
+  form_object = [
+    {
+      name: 'name_of_field_on_model',
+      label: 'Model Field',
+      required: true,
+      type: 'text',
+      maxlength: 50,
+      placeholder: 'Name of the Company',
+      change: (e) => { console.log(e); }, // onchange event
+      value: 'Blah', (used for pre-filling forms)
+
+      // Number type text field options
+      max: INTEGER,
+      min: INTEGER,
+      step: INTEGER,
+
+      // Select
+      options: [ [name, value, default: BOOLEAN], [], ...],
+
+      // Collections (Custom Type)
+
+      // Radio / Checkbox
+      value: BOOLEAN, // mapped to checked
+    }
+  ]
+
+  TODO:
+  - Automate 'name' => 'label' conversion in case no label is provided
+  - Document & gernalize collection type.
+  - Implement date & date-time field types.
+  - Implement validations, form validations & field validations
+-->
+
+<o-form>
+  <form id={ opts.js_id }
+    method={ opts.method }
+    onsubmit={ opts.submit }
+    action={ opts.action }>
+
+    <div class="u-no-list c-form">
+      <div each={ field in opts.form } class="c-form__item">
+        <o-input-group field={ field }/>
+      </div><!-- .c-form__item -->
+      <div class="c-form__item">
+        <input type="submit" value={ opts.submit_text } class="c-button c-button--primary"/>
+      </div><!-- .c-form__item -->
+    </div><!-- .c-form -->
+
+  </form>
+
+  <script>
+  var tag = this;
+
+  // Defaults
+  tag.opts.method = 'POST';
+  tag.opts.action = '';
+
+  // console.log(tag.opts.form);
+
+  clear(tag) {
+    return tag[tag.opts.js_id].reset();
+  }
+  </script>
+</o-form>

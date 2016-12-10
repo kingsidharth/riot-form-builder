@@ -1,0 +1,96 @@
+<o-input-collection>
+  <input each={ child, i in opts.children.new }
+          type="hidden"
+          value={ child.id }
+          name={ field.name + '[' + i +  ']' }>
+  </input>
+
+  <div class="c-input--collection">
+
+    <div class="c-card c-card--high">
+      <div each={ exisiting_child in opts.field.value } class="c-card__item">
+        { exisiting_child.name } | <a onclick={ delete_child } href="#">Delete</a>
+      </div><!-- .c-card__item -->
+
+      <div if={ opts.children.new.length } class="c-card__item c-card__item--divider">
+        New:
+      </div>
+      <div each={ child in opts.children.new } class="c-card__item">
+        { child.name } | <a onclick={ delete_child } href="#">Delete</a>
+      </div> <!-- .c-menu__item -->
+    </div><!-- .c-card -->
+
+    <div class="c-input-group">
+      <select onchange={ change } class="[ o-input-group__field ][ o-field o-field--select ][ c-field ]">
+
+        <option each={ option in opts.field.options } value={ option[1] }
+          selected={ option[2] }>
+          { option[0] }
+        </option>
+
+      </select>
+
+      <button onclick={ add_child } class="[ c-button c-button--ghost-primary ]">
+        Add as a Child
+      </button>
+    </div><!-- c-input-group -->
+
+  </div><!-- .c-input -->
+
+  <script>
+  var tag = this;
+
+  /*
+
+    Defaults
+
+  */
+  tag.opts.children = {
+    new: []
+  };
+
+
+  /*
+
+    Lifecycle
+
+  */
+  // tag.on('mount', () => { console.log(tag.opts); });
+  tag.on('unmount', () => { tag.off('*')});
+
+
+  /*
+
+    Event Handlers
+
+  */
+  change(e) {
+    let item = _.filter(e.item.field.options, function(o){
+      return o[1] === parseInt(e.target.value);
+    });
+
+    if(!!item.length) {
+      tag.opts.new_child = {
+        name: item[0][0],
+        id:   item[0][1]
+      }
+    }
+  }
+
+  add_child(e) {
+    tag.opts.children.new.push(tag.opts.new_child);
+    tag.opts.new_child = false;
+    tag.update();
+  }
+
+  delete_child(e){
+    let new_children = _.reject(
+      tag.opts.children.new,
+      (o) => { return o.id === parseInt(e.item.child.id) }
+    );
+
+    tag.opts.children.new = new_children;
+    tag.update();
+  }
+  </script>
+</o-input-collection>
