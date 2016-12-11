@@ -76,9 +76,16 @@
   <script>
   var tag = this;
 
+  /*
+
+    Configuration
+
+  */
   // Defaults
-  tag.opts.method = 'POST';
-  tag.opts.action = '';
+  tag.opts.config = {
+    method: 'GET',
+    action: ''
+  }
 
   // console.log(tag.opts.form);
 
