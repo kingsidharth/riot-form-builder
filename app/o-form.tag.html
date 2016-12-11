@@ -11,32 +11,40 @@
   Useage:
   `<o-form>`
 
-  opts.form is an ARRAY of FORM DEFINITIONS:
-  form_object = [
-    {
-      name: 'name_of_field_on_model',
-      label: 'Model Field',
-      required: true,
-      type: 'text',
-      maxlength: 50,
-      placeholder: 'Name of the Company',
-      change: (e) => { console.log(e); }, // onchange event
-      value: 'Blah', (used for pre-filling forms)
+  - opts.config: {
+    id: STRING, // HTML id of the form element
+    method:   STRING ENUMURATE [POST, GET, NONE], // Default: GET
+    action:  // STRING, Default: ""
+    submit:  FUNCTION, // onsubmit event
+    submit_text:  STRING, // Default: 'Submit'
+  }
 
-      // Number type text field options
-      max: INTEGER,
-      min: INTEGER,
-      step: INTEGER,
+  - opts.form is an ARRAY of FORM DEFINITIONS:
+    form_fields = [
+      {
+        name: 'name_of_field_on_model',
+        label: 'Model Field',
+        required: true,
+        type: 'text',
+        maxlength: 50,
+        placeholder: 'Name of the Company',
+        change: (e) => { console.log(e); }, // onchange event
+        value: 'Blah', (used for pre-filling forms)
 
-      // Select
-      options: [ [name, value, default: BOOLEAN], [], ...],
+        // Number type text field options
+        max: INTEGER,
+        min: INTEGER,
+        step: INTEGER,
 
-      // Collections (Custom Type)
+        // Select
+        options: [ [name, value, default: BOOLEAN], [], ...],
 
-      // Radio / Checkbox
-      value: BOOLEAN, // mapped to checked
-    }
-  ]
+        // Collections (Custom Type)
+
+        // Radio / Checkbox
+        value: BOOLEAN, // mapped to checked
+      }
+    ]
 
   TODO:
   - Automate 'name' => 'label' conversion in case no label is provided
@@ -46,17 +54,20 @@
 -->
 
 <o-form>
-  <form id={ opts.js_id }
-    method={ opts.method }
-    onsubmit={ opts.submit }
-    action={ opts.action }>
+  <form id={ opts.config.id }
+    method={ opts.config.method }
+    onsubmit={ opts.config.submit }
+    action={ opts.config.action }>
 
     <div class="u-no-list c-form">
       <div each={ field in opts.form } class="c-form__item">
         <o-input-group field={ field }/>
       </div><!-- .c-form__item -->
       <div class="c-form__item">
-        <input type="submit" value={ opts.submit_text } class="c-button c-button--primary"/>
+        <input type="submit"
+          class="c-button c-button--primary"
+          value={ opts.config.submit_text }
+        />
       </div><!-- .c-form__item -->
     </div><!-- .c-form -->
 
