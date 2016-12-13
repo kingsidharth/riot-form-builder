@@ -12,9 +12,9 @@
 
 
 ### Usage
-Include `dist/riot-form-builder.js` in your project
-In HTML or Riot Tag:
-`<o-form form={ form_object } config={ form_config }/>`
+1. Include `dist/riot-form-builder.js` in your project
+2. In HTML or Riot Tag: `<o-form form={ form_object } config={ form_config }/>`
+
 See `app/o-form.tag.html` for more
 
 
