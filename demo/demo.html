@@ -5,27 +5,19 @@
 
     <meta charset="UTF-8">
 
-    <script src="bower_components/lodash/dist/lodash.min.js"></script>
-    <script src="bower_components/riot/riot+compiler.min.js"></script>
+    <script src="../dist/riot-form-builder.js"></script>
+    <script src="../dist/demo.js"></script>
 
-    <link rel="stylesheet" href="bower_components/blaze/dist/blaze.min.css">
+    <link rel="stylesheet" href="../node_modules/blaze/dist/blaze.min.css">
 
     <style>
     body { font-family: 'Ubuntu', sans-serif; }
     .c-form { max-width: 500px; }
-    .c-form__item { padding-bottom: 20px; }
+    .c-form__item { display: block; padding-bottom: 20px; }
     </style>
   </head>
 
   <body>
-    <script type="riot/tag" src="/app/o-form.tag.html"></script>
-    <script type="riot/tag" src="/app/o-input-collection.tag.html"></script>
-    <script type="riot/tag" src="/app/o-input-group.tag.html"></script>
-    <script type="riot/tag" src="/app/o-input-radio-types.tag.html"></script>
-
-    <script>
-
-    </script>
 
     <div class="o-grid">
       <header class="o-grid__cell">
@@ -97,10 +89,10 @@
   ];
 
   // Mount Riot tags.
-  var tags;
-  riot.compile(function() {
-    tags = riot.mount('o-form', { form: transaction_form });
-  });
+  // var tags;
+  // riot.compile(function() {
+  //   tags = riot.mount('o-form', { form: transaction_form });
+  // });
   </script>
 
 </html>

@@ -60,8 +60,8 @@
     action={ opts.config.action }>
 
     <div class="u-no-list c-form">
-      <div each={ field in opts.form } class="c-form__item">
-        <o-input-group field={ field }/>
+      <div each={ field in opts.form } field={ field } data-is="o-input-group" class="c-form__item">
+        <!-- <o-input-group /> -->
       </div><!-- .c-form__item -->
       <div class="c-form__item">
         <input type="submit"
@@ -74,8 +74,10 @@
   </form>
 
   <script>
+
   var tag = this;
 
+  console.log(tag);
   /*
 
     Configuration
@@ -86,8 +88,6 @@
     method: 'GET',
     action: ''
   }
-
-  // console.log(tag.opts.form);
 
   clear(tag) {
     return tag[tag.opts.js_id].reset();
