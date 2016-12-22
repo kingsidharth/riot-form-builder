@@ -1,10 +1,6 @@
 
 
 riot.tag2('c-form', '<form id="{opts.config.id}" method="{opts.config.method}" onsubmit="{opts.config.submit}" action="{opts.config.action}"> <div class="u-no-list c-form"> <div each="{field in opts.form}" field="{field}" data-is="o-input-group" class="c-form__item"> </div> <div class="c-form__item"> <input type="submit" class="o-button o-button--primary" riot-value="{opts.config.submit_text}"> </div> </div> </form>', '', '', function(opts) {
-  require('./o-input-collection.tag.html');
-  require('./o-input-group.tag.html');
-  require('./o-input-radio-types.tag.html');
-
   var tag = this;
 
   tag.opts.config = {
