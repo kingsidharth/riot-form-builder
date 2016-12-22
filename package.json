@@ -5,8 +5,9 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "webpack --config config/webpack.config.js",
-    "watch":  "webpack --config config/webpack.config.js --watch"
+    "build": "concurrently --kill-others \"webpack --config config/webpack.config.js  \"sass --compile app/scss/:dist/css\"",
+    "watch": "concurrently --kill-others \"webpack --config config/webpack.config.js --watch\" \"sass --watch app/scss/:dist/css\"",
+    "start": "python3 -m http.server 3000"
   },
   "repository": {
     "type": "git",
