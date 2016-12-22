@@ -98,17 +98,14 @@
 /* 0 */
 /***/ function(module, exports, __webpack_require__) {
 
-	__webpack_require__(2);
-	__webpack_require__(3);
-	__webpack_require__(6);
-	module.exports = __webpack_require__(7);
+	module.exports = __webpack_require__(2);
 
 
 /***/ },
 /* 1 */
 /***/ function(module, exports, __webpack_require__) {
 
-	/* WEBPACK VAR INJECTION */(function(riot) {/* Riot v3.0.2, @license MIT */
+	/* WEBPACK VAR INJECTION */(function(riot) {/* Riot v3.0.5, @license MIT */
 	(function (global, factory) {
 	   true ? factory(exports) :
 	  typeof define === 'function' && define.amd ? define(['exports'], factory) :
@@ -421,6 +418,7 @@
 	var cssTextProp;
 	var byName = {};
 	var remainder = [];
+	var needsInject = false;
 
 	// skip the following code on the server
 	if (WIN) {
@@ -455,13 +453,15 @@
 	  add: function add(css, name) {
 	    if (name) { byName[name] = css; }
 	    else { remainder.push(css); }
+	    needsInject = true;
 	  },
 	  /**
 	   * Inject all previously saved tag styles into DOM
 	   * innerHTML seems slow: http://jsperf.com/riot-insert-style
 	   */
 	  inject: function inject() {
-	    if (!WIN) { return }
+	    if (!WIN || !needsInject) { return }
+	    needsInject = false;
 	    var style = Object.keys(byName)
 	      .map(function(k) { return byName[k] })
 	      .concat(remainder).join('\n');
@@ -1238,7 +1238,9 @@
 	function updateExpression(expr) {
 	  var dom = expr.dom,
 	    attrName = expr.attr,
-	    value = tmpl(expr.expr, this),
+	    isToggle = /^(show|hide)$/.test(attrName),
+	    // the value for the toggle must consider also the parent tag
+	    value = isToggle ? tmpl(expr.expr, extend({}, this, this.parent)) : tmpl(expr.expr, this),
 	    isValueAttr = attrName === 'riot-value',
 	    isVirtual = expr.root && expr.root.tagName === 'VIRTUAL',
 	    parent = dom && (expr.parent || dom.parentNode),
@@ -1308,7 +1310,7 @@
 	  if (isFunction(value)) {
 	    setEventHandler(attrName, value, dom, this);
 	  // show / hide
-	  } else if (/^(show|hide)$/.test(attrName)) {
+	  } else if (isToggle) {
 	    if (attrName === 'hide') { value = !value; }
 	    dom.style.display = value ? '' : 'none';
 	  // field value
@@ -1323,7 +1325,7 @@
 	      { setAttr(dom, attrName, value); }
 	  } else {
 	    // <select> <option selected={true}> </select>
-	    if (attrName === 'selected' && parent && /^(SELECT|OPTGROUP)$/.test(parent.tagName) && value != null) {
+	    if (attrName === 'selected' && parent && /^(SELECT|OPTGROUP)$/.test(parent.tagName) && value) {
 	      parent.value = dom.value;
 	    } if (expr.bool) {
 	      dom[attrName] = value;
@@ -1339,7 +1341,7 @@
 	 * @this Tag
 	 * @param { Array } expressions - expression that must be re evaluated
 	 */
-	function update$1$1(expressions) {
+	function updateAllExpressions(expressions) {
 	  each(expressions, updateExpression.bind(this));
 	}
 
@@ -1357,7 +1359,7 @@
 
 	    return this
 	  },
-	  update: function update$1() {
+	  update: function update() {
 	    var newValue = tmpl(this.expr, this.parentTag);
 
 	    if (newValue && !this.current) { // insert
@@ -1376,7 +1378,7 @@
 	      this.expressions = [];
 	    }
 
-	    if (newValue) { update$1$1.call(this.parentTag, this.expressions); }
+	    if (newValue) { updateAllExpressions.call(this.parentTag, this.expressions); }
 	  },
 	  unmount: function unmount() {
 	    unmountAll(this.expressions || []);
@@ -1553,7 +1555,7 @@
 	    tagName = getTagName(dom),
 	    impl = __TAG_IMPL[tagName] || { tmpl: getOuterHTML(dom) },
 	    useRoot = RE_SPECIAL_TAGS.test(tagName),
-	    root = dom.parentNode,
+	    parentNode = dom.parentNode,
 	    ref = createDOMPlaceholder(),
 	    child = getTag(dom),
 	    ifExpr = getAttr(dom, 'if'),
@@ -1571,27 +1573,15 @@
 	  if (ifExpr) { remAttr(dom, 'if'); }
 
 	  // insert a marked where the loop tags will be injected
-	  root.insertBefore(ref, dom);
-	  root.removeChild(dom);
+	  parentNode.insertBefore(ref, dom);
+	  parentNode.removeChild(dom);
 
 	  expr.update = function updateEach() {
 
 	    // get the new items collection
 	    var items = tmpl(expr.val, parent),
-	      parentNode,
-	      frag,
-	      placeholder;
-
-
-	    root = ref.parentNode;
-
-	    if (parentNode) {
-	      placeholder = createDOMPlaceholder('');
-	      parentNode.insertBefore(placeholder, root);
-	      parentNode.removeChild(root);
-	    } else {
-	      frag = createFrag();
-	    }
+	      frag = createFrag(),
+	      root = ref.parentNode;
 
 	    // object loop. any changes cause full redraw
 	    if (!isArray(items)) {
@@ -1689,13 +1679,7 @@
 	    // clone the items array
 	    oldItems = items.slice();
 
-	    if (frag) {
-	      root.insertBefore(frag, ref);
-	    } else {
-	      parentNode.insertBefore(root, placeholder);
-	      parentNode.removeChild(placeholder);
-	    }
-
+	    root.insertBefore(frag, ref);
 	  };
 
 	  expr.unmount = function() {
@@ -2094,7 +2078,7 @@
 	 * Update all the tags instances created
 	 * @returns { Array } all the tags instances
 	 */
-	function update$2() {
+	function update$1() {
 	  return each(__TAGS_CACHE, function (tag$$1) { return tag$$1.update(); })
 	}
 
@@ -2123,7 +2107,7 @@
 
 	  var ctx = !isAnonymous && isLoop ? this : parent || this;
 	  each(instAttrs, function (attr) {
-	    if (attr.expr) { update$1$1.call(ctx, [attr.expr]); }
+	    if (attr.expr) { updateAllExpressions.call(ctx, [attr.expr]); }
 	    opts[toCamel(attr.name)] = attr.expr ? attr.expr.value : attr.value;
 	  });
 	}
@@ -2175,7 +2159,8 @@
 	  // it could be handy to use it also to improve the virtual dom rendering speed
 	  defineProperty(this, '_riot_id', ++__uid); // base 1 allows test !t._riot_id
 
-	  extend(this, { parent: parent, root: root, opts: opts }, item);
+	  extend(this, { root: root, opts: opts }, item);
+	  defineProperty(this, 'parent', parent || false);
 	  // protect the "tags" and "refs" property from being overridden
 	  defineProperty(this, 'tags', {});
 	  defineProperty(this, 'refs', {});
@@ -2199,7 +2184,7 @@
 	    extend(this, data);
 	    updateOpts.apply(this, [isLoop, parent, isAnonymous, opts, instAttrs]);
 	    if (this.isMounted) { this.trigger('update', data); }
-	    update$1$1.call(this, expressions);
+	    updateAllExpressions.call(this, expressions);
 	    if (this.isMounted) { this.trigger('updated'); }
 
 	    return this
@@ -2467,7 +2452,7 @@
 	    tagName = opts.tagName || getTagName(opts.root, true),
 	    ptag = getImmediateCustomParentTag(parent);
 	  // fix for the parent attribute in the looped elements
-	  tag.parent = ptag;
+	  defineProperty(tag, 'parent', ptag);
 	  // store the real parent tag
 	  // in some cases this could be different from the custom parent tag
 	  // for example in nested loops
@@ -2754,7 +2739,7 @@
 	exports.tag2 = tag2$$1;
 	exports.mount = mount$$1;
 	exports.mixin = mixin$$1;
-	exports.update = update$2;
+	exports.update = update$1;
 	exports.unregister = unregister$$1;
 
 	Object.defineProperty(exports, '__esModule', { value: true });
@@ -2767,15 +2752,26 @@
 /* 2 */
 /***/ function(module, exports, __webpack_require__) {
 
+	'use strict';
+
+	__webpack_require__(3);
+
+	__webpack_require__(4);
+
+	__webpack_require__(7);
+
+	__webpack_require__(8);
+
+/***/ },
+/* 3 */
+/***/ function(module, exports, __webpack_require__) {
+
 	var riot = __webpack_require__(1);
 
 
 
-	riot.tag2('o-form', '<form id="{opts.config.id}" method="{opts.config.method}" onsubmit="{opts.config.submit}" action="{opts.config.action}"> <div class="u-no-list c-form"> <div each="{field in opts.form}" field="{field}" data-is="o-input-group" class="c-form__item"> </div> <div class="c-form__item"> <input type="submit" class="o-button o-button--primary" riot-value="{opts.config.submit_text}"> </div> </div> </form>', '', '', function(opts) {
-
+	riot.tag2('c-form', '<form id="{opts.config.id}" method="{opts.config.method}" onsubmit="{opts.config.submit}" action="{opts.config.action}"> <div class="u-no-list c-form"> <div each="{field in opts.form}" field="{field}" data-is="o-input-group" class="c-form__item"> </div> <div class="c-form__item"> <input type="submit" class="o-button o-button--primary" riot-value="{opts.config.submit_text}"> </div> </div> </form>', '', '', function(opts) {
 	  var tag = this;
-
-	  console.log(tag);
 
 	  tag.opts.config = {
 	    method: 'GET',
@@ -2789,7 +2785,7 @@
 
 
 /***/ },
-/* 3 */
+/* 4 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(_) {var riot = __webpack_require__(1);
@@ -2833,10 +2829,10 @@
 	  }.bind(this)
 	});
 
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(4)))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(5)))
 
 /***/ },
-/* 4 */
+/* 5 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_RESULT__;/* WEBPACK VAR INJECTION */(function(global, module, _) {/**
@@ -19905,10 +19901,10 @@
 	  }
 	}.call(this));
 
-	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }()), __webpack_require__(5)(module), __webpack_require__(4)))
+	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }()), __webpack_require__(6)(module), __webpack_require__(5)))
 
 /***/ },
-/* 5 */
+/* 6 */
 /***/ function(module, exports) {
 
 	module.exports = function(module) {
@@ -19924,7 +19920,7 @@
 
 
 /***/ },
-/* 6 */
+/* 7 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(_) {var riot = __webpack_require__(1);
@@ -19952,10 +19948,10 @@
 
 	});
 
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(4)))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(5)))
 
 /***/ },
-/* 7 */
+/* 8 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var riot = __webpack_require__(1);

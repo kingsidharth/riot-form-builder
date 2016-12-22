@@ -53,7 +53,7 @@
   - Implement validations, form validations & field validations
 -->
 
-<o-form>
+<c-form>
   <form id={ opts.config.id }
     method={ opts.config.method }
     onsubmit={ opts.config.submit }
@@ -74,10 +74,8 @@
   </form>
 
   <script>
-
   var tag = this;
 
-  console.log(tag);
   /*
 
     Configuration
@@ -93,4 +91,4 @@
     return tag[tag.opts.js_id].reset();
   }
   </script>
-</o-form>
+</c-form>

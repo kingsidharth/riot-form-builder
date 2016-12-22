@@ -1,5 +1,5 @@
-// import "./o-form.tag.html";
+import "riot-form-builder.js";
 
 window.onload = (e) => {
-  return riot.mount('o-form', { form: transaction_form });
+  return riot.mount('c-form', { form: transaction_form });
 }

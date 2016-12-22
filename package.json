@@ -2,11 +2,11 @@
   "name": "riot-form-builder",
   "version": "1.2.0",
   "description": "### Dependencies 1. Riotjs 2. Lodash",
-  "main": "index.js",
+  "main": "app/index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "concurrently --kill-others \"webpack --config config/webpack.config.js  \"sass --compile app/scss/:dist/css\"",
-    "watch": "concurrently --kill-others \"webpack --config config/webpack.config.js --watch\" \"sass --watch app/scss/:dist/css\"",
+    "build": "concurrently --kill-others \"webpack --config config/webpack.config.js  ",
+    "watch": "concurrently --kill-others \"webpack --config config/webpack.config.js --watch\" ",
     "start": "python3 -m http.server 3000"
   },
   "repository": {
@@ -24,6 +24,7 @@
     "babel-loader": "^6.2.9",
     "babel-preset-es2015": "^6.18.0",
     "blaze": "^3.2.0",
+    "concurrently": "^3.1.0",
     "lodash": "^4.17.2",
     "riot": "^3.0.2",
     "tag-loader": "^0.3.0",
