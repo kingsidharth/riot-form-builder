@@ -9,6 +9,7 @@ webpackJsonp([0],[
 	};
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
+<<<<<<< HEAD
 /***/ },
 /* 1 */
 /***/ function(module, exports, __webpack_require__) {
@@ -2656,5 +2657,7 @@ webpackJsonp([0],[
 
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
+=======
+>>>>>>> parent of 7f6658e... riot vomitted this file
 /***/ }
 ]);
